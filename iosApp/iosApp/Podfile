@@ -1,0 +1,6 @@
+target 'iosApp' do
+  use_frameworks!
+
+  pod 'shared', :path => '../shared'
+  pod 'FirebaseAuth', '10.15.0'
+end
