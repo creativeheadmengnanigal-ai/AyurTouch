@@ -568,7 +568,7 @@ fun LoginScreen(navController: NavController) {
 
 @Composable
 fun PhoneNumberInputSection(
-    value: String,
+    value: String,  
     onValueChange: (String) -> Unit,
     placeholder: String = LoginScreenStrings.PHONE_NUMBER_PLACEHOLDER,
 ) {
