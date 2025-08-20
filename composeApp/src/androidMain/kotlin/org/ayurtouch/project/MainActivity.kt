@@ -1,7 +1,8 @@
 package org.ayurtouch.project
 
 
-import android.app.Activity
+import android.annotation.SuppressLint
+import android.content.IntentFilter
 import org.ayurtouch.project.doctor.screens.mainScreen.DoctorMainScreen
 import android.os.Build
 import android.os.Bundle
@@ -9,15 +10,21 @@ import android.view.WindowInsets
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
-import androidx.compose.ui.platform.LocalContext
 import androidx.core.view.WindowCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
+<<<<<<< Updated upstream
+import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.firebase.auth.FirebaseAuth
+=======
 import com.google.firebase.FirebaseApp
+
+>>>>>>> Stashed changes
 import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
 import org.ayurtouch.project.doctor.screens.annoncementScreen.AnnouncementScreen
 import org.ayurtouch.project.doctor.screens.appointmentScreen.DoctorAppointmentScreen
@@ -26,21 +33,63 @@ import org.ayurtouch.project.doctor.screens.appointmentScreen.reSchedule.DoctorA
 import org.ayurtouch.project.doctor.screens.doctorChatScreen.ChatDetailScreen
 import org.ayurtouch.project.doctor.screens.doctorChatScreen.DoctorChatScreen
 import org.ayurtouch.project.doctor.screens.homeScreen.HomeScreen
-import org.ayurtouch.project.doctor.screens.loginScreen.LoginScreen
+import org.ayurtouch.project.doctor.screens.loginScreen.view.DoctorLoginScreen
+import org.ayurtouch.project.doctor.screens.loginScreen.viewmodel.DoctorLoginViewModel
+import org.ayurtouch.project.doctor.screens.loginScreen.model.SmsBroadcastReceiver
+
 import org.ayurtouch.project.doctor.screens.notificationScreen.NotificationScreen
 import org.ayurtouch.project.doctor.screens.settingScreen.SettingsScreen
 import org.ayurtouch.project.doctor.screens.splashScreen.SplashScreen
 
 
-class MainActivity : ComponentActivity() {
+open class MainActivity : ComponentActivity() {
+    private lateinit var auth: FirebaseAuth
+
+    private lateinit var viewModel: DoctorLoginViewModel
+
+    private val loginViewModel: DoctorLoginViewModel by viewModels()
+
+    private lateinit var smsReceiver: SmsBroadcastReceiver
+
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
+    override fun onStart() {
+        super.onStart()
+        smsReceiver = SmsBroadcastReceiver().apply {
+            otpReceived = { code ->
+                loginViewModel.updateOtp(code)
+            }
+        }
+        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+        registerReceiver(smsReceiver, intentFilter)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(smsReceiver)
+    }
+
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+<<<<<<< Updated upstream
+        auth = FirebaseAuth.getInstance()
+        viewModel = DoctorLoginViewModel()
+
+
+
+=======
         FirebaseApp.initializeApp(this)
+>>>>>>> Stashed changes
+
+
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
+
+
         setContent {
+
             MaterialTheme {
 
                 val navController = rememberNavController()
@@ -66,7 +115,12 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable("auth") {
-                        LoginScreen(navController )
+                        DoctorLoginScreen(
+                            activity = this@MainActivity,
+                            auth = auth,
+                            navController = navController,
+                            viewModel = viewModel
+                        )
                     }
                     composable(Screen.DoctorMain.route) {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
