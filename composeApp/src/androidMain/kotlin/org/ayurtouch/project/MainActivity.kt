@@ -18,13 +18,9 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-<<<<<<< Updated upstream
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.firebase.auth.FirebaseAuth
-=======
 import com.google.firebase.FirebaseApp
-
->>>>>>> Stashed changes
 import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
 import org.ayurtouch.project.doctor.screens.annoncementScreen.AnnouncementScreen
 import org.ayurtouch.project.doctor.screens.appointmentScreen.DoctorAppointmentScreen
@@ -72,15 +68,15 @@ open class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-<<<<<<< Updated upstream
+
         auth = FirebaseAuth.getInstance()
         viewModel = DoctorLoginViewModel()
 
 
 
-=======
+
         FirebaseApp.initializeApp(this)
->>>>>>> Stashed changes
+
 
 
         enableEdgeToEdge()
