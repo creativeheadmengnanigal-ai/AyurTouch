@@ -9,17 +9,29 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import app.rive.runtime.kotlin.RiveAnimationView
 import app.rive.runtime.kotlin.core.Loop
-
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 import org.ayurtouch.project.R
+import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
 
 @Composable
 fun SplashScreen(navController: NavController) {
+    val auth = FirebaseAuth.getInstance()
 
     LaunchedEffect(Unit) {
-        delay(6000) // match your animation length
-        navController.navigate("auth") {
-            popUpTo("splash") { inclusive = true }
+        delay(6000) // wait for animation
+
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            // ✅ user already logged in, go to doctor home
+            navController.navigate(Screen.DoctorMain.route) {
+                popUpTo(Screen.Splash.route) { inclusive = true }
+            }
+        } else {
+            // 🚪 no user, go to login/auth flow
+            navController.navigate(Screen.Auth.route) {
+                popUpTo(Screen.Splash.route) { inclusive = true }
+            }
         }
     }
 
@@ -34,15 +46,10 @@ fun SplashScreen(navController: NavController) {
                     setRiveResource(
                         resId = R.raw.doctor_splash,
                         artboardName = "doctor_splash",
-
                         stateMachineName = "State Machine 1",
                         loop = Loop.ONESHOT
                     )
-
-                    // Start the state machine trigger
-                    post {
-                        fireState("State Machine 1", "Trigger 1")
-                    }
+                    post { fireState("State Machine 1", "Trigger 1") }
                 }
             }
         )

@@ -186,8 +186,8 @@ fun SearchHereTextStyle(): TextStyle = TextStyle(
 //----------------------------------------------------------------------------------------------------------------------------------------
 
 object  DoctorSettingScreenString{
-    const val DOCTOR_NAME="Dr. Name Display"
-    const val YEAR_OF_EXPERIENCE="15 Years Of Experience"
+
+
     const val LANGUAGE="Languages"
     const val CLINICAL_INTERESTS="Clinical Interests"
     const val LOCATION="Location"

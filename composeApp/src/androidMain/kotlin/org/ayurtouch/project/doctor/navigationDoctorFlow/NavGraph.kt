@@ -26,11 +26,11 @@ sealed class Screen(val route: String) {
 
     object DoctorChat:Screen("chat_screen")
 
+    object DoctorNotification:Screen("notification_screen")
+
     // New one
     object DoctorChatDetail : Screen("chat_detail_screen/{name}/{role}") {
         fun createRoute(name: String, role: String) = "chat_detail_screen/$name/$role"
     }
-
-
 }
 

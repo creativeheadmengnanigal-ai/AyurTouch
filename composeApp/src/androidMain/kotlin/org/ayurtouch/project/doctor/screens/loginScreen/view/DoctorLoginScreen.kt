@@ -336,6 +336,7 @@
 
 package org.ayurtouch.project.doctor.screens.loginScreen.view
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -349,10 +350,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusProperties
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -375,6 +381,11 @@ import org.jetbrains.compose.resources.painterResource
 import ayurtouch.composeapp.generated.resources.* // auto-generated resources
 import com.google.firebase.auth.FirebaseAuth
 import org.ayurtouch.project.doctor.screens.loginScreen.viewmodel.DoctorLoginViewModel
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.Composable
 
 @Composable
 fun DoctorLoginScreen(
@@ -384,6 +395,7 @@ fun DoctorLoginScreen(
     auth: FirebaseAuth
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    Log.d("DoctorLoginScreen", "Recomposing with phone number: $uiState")
 
     Box(
         modifier = Modifier
@@ -446,18 +458,12 @@ fun DoctorLoginScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    repeat(6) { index ->
-                        val digit = uiState.otp.getOrNull(index)?.toString() ?: ""
-                        OtpInputSection(
-                            value = digit,
-                            onValueChange = { entered ->
-                                val otpChars = uiState.otp.toCharArray().toMutableList()
-                                if (index < otpChars.size) otpChars[index] = entered.firstOrNull() ?: ' '
-                                else if (entered.isNotEmpty()) otpChars.add(entered.first())
-                                viewModel.updateOtp(otpChars.joinToString(""))
-                            }
-                        )
-                    }
+                    OtpInputRow(
+                        otp = uiState.otp,
+                        onOtpChange = { viewModel.updateOtp(it) }
+                    )
+
+
                 }
             }
 
@@ -503,6 +509,87 @@ fun DoctorLoginScreen(
         }
     }
 }
+
+
+
+
+@Composable
+fun OtpInputRow(
+    otp: String,
+    onOtpChange: (String) -> Unit
+) {
+    val focusRequesters = List(6) { FocusRequester() }
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceEvenly
+    ) {
+        repeat(6) { index ->
+            val char = otp.getOrNull(index)?.toString() ?: ""
+
+            OutlinedTextField(
+                value = char,
+                onValueChange = { newValue ->
+                    if (newValue.length <= 1 && newValue.all { it.isDigit() }) {
+                        // Handle digit input
+                        val otpChars = otp.padEnd(6, ' ').toCharArray()
+
+                        if (newValue.isNotEmpty()) {
+                            otpChars[index] = newValue.first()
+                            val newOtp = String(otpChars).trim()
+                            onOtpChange(newOtp)
+
+                            // Move focus to next box if digit entered
+                            if (index < 5) {
+                                focusRequesters[index + 1].requestFocus()
+                            }
+                        } else {
+                            // Handle backspace/delete
+                            otpChars[index] = ' '
+                            val newOtp = String(otpChars).trim()
+                            onOtpChange(newOtp)
+
+                            // Move focus to previous box on backspace
+                            if (index > 0) {
+                                focusRequesters[index - 1].requestFocus()
+                            }
+                        }
+                    } else if (newValue.isEmpty()) {
+                        // Handle backspace when field is empty
+                        val otpChars = otp.padEnd(6, ' ').toCharArray()
+                        otpChars[index] = ' '
+                        val newOtp = String(otpChars).trim()
+                        onOtpChange(newOtp)
+
+                        // Move focus to previous box
+                        if (index > 0) {
+                            focusRequesters[index - 1].requestFocus()
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .size(45.dp)
+                    .background(AppColors.White)
+                    .clip(RoundedCornerShape(5.dp))
+                    .focusRequester(focusRequesters[index]),
+                textStyle = TextStyle(
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black
+                ),
+                singleLine = true,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                colors = TextFieldDefaults.outlinedTextFieldColors(
+                    focusedBorderColor = Color(0xFFFAC79B),
+                    unfocusedBorderColor = Color(0xFFFAC79B),
+                    cursorColor = Color.Black
+                )
+            )
+        }
+    }
+}
+
 
 @Composable
 fun PhoneNumberInputSection(

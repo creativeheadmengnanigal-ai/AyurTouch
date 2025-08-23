@@ -22,8 +22,10 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import ayurtouch.composeapp.generated.resources.*
+import com.google.firebase.firestore.FirebaseFirestore
 import org.ayurtouch.project.*
 import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
+import org.ayurtouch.project.doctor.screens.homeScreen.model.DoctorInfo
 import org.ayurtouch.project.doctor.utils.CustomHeightShadowBox
 
 import org.ayurtouch.project.doctor.utils.CustomUserProfile
@@ -32,7 +34,6 @@ import org.ayurtouch.project.doctor.utils.CustomWrapShadowBox
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
 
 
 private const val TAG = "HomeScreen"
@@ -79,17 +80,15 @@ fun HomeScreen(navController: NavController) {
                 isSecondBoxVisible = false
                 isStatusActive = true
                 Log.d(TAG, "Location box clicked.")
-            }
-        )
+            })
 
         TitleWithArrowRow(
-            title = DoctorHomeScreenString.APPOINTMENTS,
-            isArrowVisible = true
+            title = DoctorHomeScreenString.APPOINTMENTS, isArrowVisible = true
         ) {
 //            navController.navigate(Screen.DoctorAppointment.route)
         }
 
-        AppointmentList(appointments,navController)
+        AppointmentList(appointments, navController)
 
         TitleWithArrowRow(title = DoctorHomeScreenString.AYURVEDIC_BODY_TYPE)
 
@@ -100,9 +99,7 @@ fun HomeScreen(navController: NavController) {
         SectionTitle(DoctorHomeScreenString.SEARCH_BY)
 
         SymptomDiseaseSwitch(
-            selectedOption = selectedTab,
-            onOptionSelected = { selectedTab = it }
-        )
+            selectedOption = selectedTab, onOptionSelected = { selectedTab = it })
 
         SearchBar(
             value = searchQuery,
@@ -141,7 +138,6 @@ fun TopBar(navController: NavController) {
     ) {
 
 
-
         CustomUserProfile(
             onClick = {
                 navController.navigate(
@@ -157,6 +153,9 @@ fun TopBar(navController: NavController) {
              size = 60.dp,
             image = Res.drawable.doctor_dp
         )
+
+
+
 
         Column(
             modifier = Modifier
@@ -194,9 +193,7 @@ fun TopBar(navController: NavController) {
 
 @Composable
 fun TitleWithArrowRow(
-    title: String,
-    isArrowVisible: Boolean = false,
-    onArrowClick: (() -> Unit)? = null
+    title: String, isArrowVisible: Boolean = false, onArrowClick: (() -> Unit)? = null
 ) {
     Row(
         modifier = Modifier
@@ -205,9 +202,7 @@ fun TitleWithArrowRow(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = title,
-            style = AppointmentsTextStyle(),
-            modifier = Modifier.weight(1f)
+            text = title, style = AppointmentsTextStyle(), modifier = Modifier.weight(1f)
         )
         if (isArrowVisible) {
             Icon(
@@ -216,19 +211,16 @@ fun TitleWithArrowRow(
                 tint = AppColors.VibrantOrange,
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable { onArrowClick?.invoke() }
-            )
+                    .clickable { onArrowClick?.invoke() })
         }
     }
 }
 
 
-
 @Composable
 fun AppointmentList(appointments: List<Appointment>, navController: NavController) {
     LazyRow(
-        modifier = Modifier
-            .padding(horizontal = 20.dp, vertical = 10.dp),
+        modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         itemsIndexed(appointments) { index, appointment ->
@@ -264,41 +256,29 @@ fun AppointmentCard(appointment: Appointment, index: Int, navController: NavCont
 
 @Composable
 fun TimeDateBox(
-    time: String,
-    date: String,
-    backgroundImageRes: DrawableResource,
-    isOddIndex: Boolean
+    time: String, date: String, backgroundImageRes: DrawableResource, isOddIndex: Boolean
 ) {
     Box(
-        contentAlignment =  Alignment.Center,
-        modifier = Modifier.size(width = 143.dp , height = 83.dp)
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.size(width = 143.dp, height = 83.dp)
     ) {
         CustomWrapImage(
-            imageRes =  backgroundImageRes,
-            height = 83,
-            width = 100,
-            isClick = false,
-            onClick = {}
-        )
+            imageRes = backgroundImageRes, height = 83, width = 100, isClick = false, onClick = {})
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
-            modifier = Modifier
-                .padding(
-                    top = if (!isOddIndex) 10.dp else 0.dp,
-                    bottom = if (isOddIndex) 10.dp else 0.dp,
+            modifier = Modifier.padding(
+                top = if (!isOddIndex) 10.dp else 0.dp,
+                bottom = if (isOddIndex) 10.dp else 0.dp,
 
-                )
-            ,
+                ),
 
-        ) {
+            ) {
             Text(time, style = AppointmentsTimeDateTextStyle())
             Text(date, style = AppointmentsTimeDateTextStyle())
         }
     }
 }
-
-
 
 
 @Composable
@@ -308,18 +288,12 @@ fun AppointmentDetailsBox(appointment: Appointment, navController: NavController
 
             .clickable {
                 navController.navigate(
-                    Screen.DoctorAppointment.route +
-                            "?isAppointmentHome=true" +
-                            "&isCancelled=false" +
-                            "&isReschedule=false" +
-                            "&isStartConsulting=false" +
-                            "&isPreview=false"
+                    Screen.DoctorAppointment.route + "?isAppointmentHome=true" + "&isCancelled=false" + "&isReschedule=false" + "&isStartConsulting=false" + "&isPreview=false"
                 )
                 Log.d(TAG, "Appointment clicked: $appointment")
-            }
-    ) {
+            }) {
 
-        CustomWrapShadowBox (
+        CustomWrapShadowBox(
             boxHeight = 143,
             boxWidth = 143,
             vertical = 0,
@@ -328,7 +302,11 @@ fun AppointmentDetailsBox(appointment: Appointment, navController: NavController
             cornerRadius = 10,
             blurRadius = 100
         ) {
-            Column(modifier = Modifier.fillMaxSize().padding(10.dp)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(10.dp)
+            ) {
                 Text(appointment.consultingType, style = ConsultingTypeTextStyle())
                 Spacer(Modifier.height(20.dp))
                 Text(appointment.status, style = PatientNameTextStyle())
@@ -343,16 +321,16 @@ fun AppointmentDetailsBox(appointment: Appointment, navController: NavController
 @Composable
 fun AyurvedicBox() {
 
-        CustomHeightShadowBox(
-            boxHeight = 94,
-            horizontal = 20,
-            vertical = 0,
-            backgroundColor = AppColors.CreamyPeach,
-            blurRadius = 50,
-            cornerRadius = 10
-        ) {
-            InfinityCircles()
-        }
+    CustomHeightShadowBox(
+        boxHeight = 94,
+        horizontal = 20,
+        vertical = 0,
+        backgroundColor = AppColors.CreamyPeach,
+        blurRadius = 50,
+        cornerRadius = 10
+    ) {
+        InfinityCircles()
+    }
 
 
 }
@@ -390,9 +368,7 @@ fun InfinityCircles() {
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Analyze your Dosha",
-                style = PatientNameTextStyle(),
-                color = Color.White
+                text = "Analyze your Dosha", style = PatientNameTextStyle(), color = Color.White
             )
         }
     }
@@ -400,8 +376,7 @@ fun InfinityCircles() {
 
 @Composable
 fun SymptomDiseaseSwitch(
-    selectedOption: String,
-    onOptionSelected: (String) -> Unit
+    selectedOption: String, onOptionSelected: (String) -> Unit
 ) {
     val options = listOf("Symptoms", "Disease")
 
@@ -424,15 +399,14 @@ fun SymptomDiseaseSwitch(
                     .background(if (isSelected) AppColors.White else Color.Transparent)
                     .clickable { onOptionSelected(option) }
                     .padding(vertical = 8.dp),
-                contentAlignment = Alignment.Center
-            ) {
+                contentAlignment = Alignment.Center) {
                 Text(
                     text = option,
 
                     color = if (isSelected) Color.Black else AppColors.OrangePrimary,
                     fontFamily = Monsetserrat400(),
 
-                )
+                    )
             }
         }
     }
@@ -440,10 +414,7 @@ fun SymptomDiseaseSwitch(
 
 @Composable
 fun SearchBar(
-    value: String,
-    onValueChange: (String) -> Unit,
-    hint: String = "Search here",
-    startIcon: Painter
+    value: String, onValueChange: (String) -> Unit, hint: String = "Search here", startIcon: Painter
 ) {
     Box(
         modifier = Modifier
@@ -455,8 +426,7 @@ fun SearchBar(
             modifier = Modifier
                 .matchParentSize()
                 .background(
-                    AppColors.OrangePrimary.copy(alpha = 0.4f),
-                    RoundedCornerShape(35.dp)
+                    AppColors.OrangePrimary.copy(alpha = 0.4f), RoundedCornerShape(35.dp)
                 )
                 .blur(20.dp)
         )
@@ -480,9 +450,7 @@ fun SearchBar(
                 },
                 placeholder = {
                     Text(
-                        text = hint,
-                        style = SearchHereTextStyle(),
-                        color = Color.Gray
+                        text = hint, style = SearchHereTextStyle(), color = Color.Gray
                     )
                 },
                 colors = TextFieldDefaults.colors(
@@ -520,8 +488,7 @@ fun AppTourContainer() {
             modifier = Modifier
                 .matchParentSize()
                 .background(
-                    AppColors.OrangePrimary.copy(alpha = 0.4f),
-                    RoundedCornerShape(10.dp)
+                    AppColors.OrangePrimary.copy(alpha = 0.4f), RoundedCornerShape(10.dp)
                 )
                 .blur(20.dp)
         )
@@ -542,8 +509,7 @@ fun AppTourContainer() {
                     modifier = Modifier.weight(1f)
                 ) {
                     Text(
-                        text = "App Tutorial",
-                        style = ConsultingTypeTextStyle()
+                        text = "App Tutorial", style = ConsultingTypeTextStyle()
                     )
                     Spacer(Modifier.height(10.dp))
                     Text(
@@ -564,6 +530,7 @@ fun AppTourContainer() {
         }
     }
 }
+
 @Composable
 fun StatusLocationSection(
     isStatusActive: Boolean,
@@ -596,10 +563,8 @@ fun StatusLocationSection(
                 )
                 Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text = if (isStatusActive)
-                        DoctorHomeScreenString.ACTIVE
-                    else DoctorHomeScreenString.STATUS,
-                    style = StatusTextStyle()
+                    text = if (isStatusActive) DoctorHomeScreenString.ACTIVE
+                    else DoctorHomeScreenString.STATUS, style = StatusTextStyle()
                 )
             }
         }
@@ -616,8 +581,7 @@ fun StatusLocationSection(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = DoctorHomeScreenString.LOCATION,
-                    style = LocationTextStyle()
+                    text = DoctorHomeScreenString.LOCATION, style = LocationTextStyle()
                 )
             }
         }
