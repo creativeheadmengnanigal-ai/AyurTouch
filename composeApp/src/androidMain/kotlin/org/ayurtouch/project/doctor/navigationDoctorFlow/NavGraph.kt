@@ -1,8 +1,5 @@
 package org.ayurtouch.project.doctor.navigationDoctorFlow
 
-import android.net.Uri
-import androidx.compose.runtime.mutableStateOf
-
 
 sealed class Screen(val route: String) {
 
@@ -20,11 +17,14 @@ sealed class Screen(val route: String) {
 
     object DoctorAppointmentReschedule: Screen("doctor_appointment_reschedule")
 
+
     object DoctorSetting :Screen("doctor_setting")
 
     object DoctorAnnouncement:Screen("announcement_screen")
 
+
     object DoctorChat:Screen("chat_screen")
+
 
     object DoctorNotification:Screen("notification_screen")
 

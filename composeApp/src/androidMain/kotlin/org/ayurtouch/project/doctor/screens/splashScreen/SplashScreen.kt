@@ -16,19 +16,24 @@ import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
 
 @Composable
 fun SplashScreen(navController: NavController) {
+
+
+
     val auth = FirebaseAuth.getInstance()
+
+
 
     LaunchedEffect(Unit) {
         delay(6000) // wait for animation
 
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            // ✅ user already logged in, go to doctor home
+
             navController.navigate(Screen.DoctorMain.route) {
                 popUpTo(Screen.Splash.route) { inclusive = true }
             }
         } else {
-            // 🚪 no user, go to login/auth flow
+
             navController.navigate(Screen.Auth.route) {
                 popUpTo(Screen.Splash.route) { inclusive = true }
             }

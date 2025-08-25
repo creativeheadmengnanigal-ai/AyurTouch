@@ -9,3 +9,4 @@ data class DoctorLoginUiState(
     val verificationId: String? = null,
     val loginSuccess: Boolean = false
 )
+
