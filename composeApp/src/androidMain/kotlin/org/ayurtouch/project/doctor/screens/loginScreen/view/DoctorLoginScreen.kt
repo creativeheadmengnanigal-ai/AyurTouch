@@ -21,6 +21,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import ayurtouch.composeapp.generated.resources.*
 import com.google.firebase.FirebaseException
@@ -42,6 +43,8 @@ import org.ayurtouch.project.PlaceHolderTextStyle
 import org.ayurtouch.project.ResendOtpTextStyle
 import org.ayurtouch.project.ToYourAccountTextStyle
 import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
+import org.ayurtouch.project.doctor.screens.homeScreen.model.Doctor
+import org.ayurtouch.project.doctor.screens.loginScreen.viewmodel.DoctorLoginViewModel
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import java.util.concurrent.TimeUnit
@@ -52,11 +55,13 @@ fun DoctorLoginScreen(
     navController: NavController,
     activity: MainActivity,
     auth: FirebaseAuth,
-    ) {
-    var phoneNumber by rememberSaveable  { mutableStateOf("") }
+) {
+    var phoneNumber by rememberSaveable { mutableStateOf("") }
     var isOtpSent by rememberSaveable { mutableStateOf(false) }
     val otpStates = remember { List(6) { mutableStateOf("") } }
     var storedVerificationId by rememberSaveable { mutableStateOf<String?>(null) }
+
+    val viewModel: DoctorLoginViewModel = viewModel()
 
 
     Box(
@@ -88,18 +93,15 @@ fun DoctorLoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = LoginScreenStrings.HELLO,
-                style = HelloTextStyle()
+                text = LoginScreenStrings.HELLO, style = HelloTextStyle()
             )
             Spacer(modifier = Modifier.height(10.dp))
             Row {
                 Text(
-                    text = LoginScreenStrings.LOGIN,
-                    style = LoginTextStyle()
+                    text = LoginScreenStrings.LOGIN, style = LoginTextStyle()
                 )
                 Text(
-                    text = LoginScreenStrings.TO_YOUR_ACCOUNT,
-                    style = ToYourAccountTextStyle()
+                    text = LoginScreenStrings.TO_YOUR_ACCOUNT, style = ToYourAccountTextStyle()
                 )
             }
         }
@@ -114,33 +116,29 @@ fun DoctorLoginScreen(
                 text = LoginScreenStrings.ENTER_MOBILE_NUMBER,
                 style = EnterYourMobileNumberTextStyle(),
 
-            )
+                )
 
             PhoneNumberInputSection(
-                value = phoneNumber,
-                onValueChange = { phoneNumber = it }
-            )
+                value = phoneNumber, onValueChange = { phoneNumber = it })
 
             Spacer(modifier = Modifier.height(40.dp))
 
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 otpStates.forEachIndexed { index, state ->
                     OtpInputSection(
-                        value = state.value,
-                        onValueChange = { otpStates[index].value = it }
-                    )
+                        value = state.value, onValueChange = { otpStates[index].value = it })
                 }
             }
 
         }
         Spacer(modifier = Modifier.height(10.dp))
         Text(
-            modifier = Modifier.fillMaxWidth()
-                .offset(y= 540.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .offset(y = 540.dp)
                 .padding(horizontal = 30.dp),
             text = LoginScreenStrings.RE_SEND_OTP,
             textAlign = TextAlign.End,
@@ -149,68 +147,6 @@ fun DoctorLoginScreen(
         )
 
 
-//        SendOtpButton(
-//            text = if (!isOtpSent) LoginScreenStrings.SEND_OTP else LoginScreenStrings.LOGIN,
-//            modifier = Modifier.padding(horizontal = 34.dp, vertical = 16.dp),
-//            onClick = {
-//                if (!isOtpSent) {
-//                    // ✅ Send OTP
-//                    if (phoneNumber.length < 10) {
-//                        println("❌ Invalid phone number")
-//                    } else {
-//                        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-//                             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-//                                // Auto-fill OTP if Google Play services catches it
-//                                credential.smsCode?.let { code ->
-//                                    otpStates.forEachIndexed { index, state ->
-//                                        if (index < code.length) state.value = code[index].toString()
-//                                    }
-//                                }
-//                            }
-//
-//                            override fun onVerificationFailed(e: FirebaseException) {
-//                                println("❌ OTP Send Failed: ${e.message}")
-//                            }
-//
-//                            override fun onCodeSent(
-//                                verificationId: String,
-//                                token: PhoneAuthProvider.ForceResendingToken
-//                            ) {
-//                                println("✅ OTP Sent to $phoneNumber")
-//                                isOtpSent = true
-//                                var storedVerificationId = verificationId
-//                            }
-//                        }
-//
-//                        val options = PhoneAuthOptions.newBuilder(auth)
-//                            .setPhoneNumber("+91$phoneNumber") // add country code
-//                            .setTimeout(60L, TimeUnit.SECONDS)
-//                            .setActivity(activity)
-//                            .setCallbacks(callbacks)
-//                            .build()
-//
-//                        PhoneAuthProvider.verifyPhoneNumber(options)
-//                    }
-//                } else {
-//                    // ✅ Verify OTP
-//                    val enteredOtp = otpStates.joinToString("") { it.value }
-//                    if (storedVerificationId != null && enteredOtp.isNotEmpty()) {
-//                        val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, enteredOtp)
-//                        auth.signInWithCredential(credential)
-//                            .addOnCompleteListener { task ->
-//                                if (task.isSuccessful) {
-//                                    println("✅ Login Success")
-//                                    navController.navigate(Screen.DoctorMain.route) {
-//                                        popUpTo(Screen.Auth.route) { inclusive = true }
-//                                    }
-//                                } else {
-//                                    println("❌ Invalid OTP: ${task.exception?.message}")
-//                                }
-//                            }
-//                    }
-//                }
-//            }
-//        )
         SendOtpButton(
             text = if (!isOtpSent) LoginScreenStrings.SEND_OTP else LoginScreenStrings.LOGIN,
             modifier = Modifier.padding(horizontal = 34.dp, vertical = 16.dp),
@@ -220,51 +156,50 @@ fun DoctorLoginScreen(
                     if (phoneNumber.length < 10) {
                         println("❌ Invalid phone number")
                     } else {
-                        val callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-                            override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                                // Auto-fill OTP if SMS Retriever catches it
-                                credential.smsCode?.let { code ->
-                                    otpStates.forEachIndexed { index, state ->
-                                        if (index < code.length) state.value = code[index].toString()
-                                    }
-                                    // Direct login if auto-verification succeeds
-                                    auth.signInWithCredential(credential)
-                                        .addOnCompleteListener { task ->
-                                            if (task.isSuccessful) {
-                                                println("✅ Auto Login Success")
-                                                saveDoctorInfo("+91$phoneNumber")
-                                                navController.navigate(Screen.DoctorMain.route) {
-                                                    popUpTo(Screen.Auth.route) { inclusive = true }
-                                                }
-
-                                            }
+                        val callbacks =
+                            object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
+                                override fun onVerificationCompleted(credential: PhoneAuthCredential) {
+                                    // Auto-fill OTP if SMS Retriever catches it
+                                    credential.smsCode?.let { code ->
+                                        otpStates.forEachIndexed { index, state ->
+                                            if (index < code.length) state.value =
+                                                code[index].toString()
                                         }
+                                        // Direct login if auto-verification succeeds
+//                                    auth.signInWithCredential(credential)
+//                                        .addOnCompleteListener { task ->
+//                                            if (task.isSuccessful) {
+//                                                println("✅ Auto Login Success")
+//                                                saveDoctorInfo("+91$phoneNumber")
+//                                                navController.navigate(Screen.DoctorMain.route) {
+//                                                    popUpTo(Screen.Auth.route) { inclusive = true }
+//                                                }
+//
+//                                            }
+//                                        }
+                                    }
+                                }
+
+
+                                override fun onVerificationFailed(e: FirebaseException) {
+                                    println("❌ OTP Send Failed: ${e.message}")
+                                }
+
+                                override fun onCodeSent(
+                                    verificationId: String,
+                                    token: PhoneAuthProvider.ForceResendingToken
+                                ) {
+                                    println("✅ OTP Sent to $phoneNumber")
+                                    isOtpSent = true
+                                    // ❌ FIX: don’t shadow variable
+                                    storedVerificationId = verificationId
                                 }
                             }
 
-
-
-                            override fun onVerificationFailed(e: FirebaseException) {
-                                println("❌ OTP Send Failed: ${e.message}")
-                            }
-
-                            override fun onCodeSent(
-                                verificationId: String,
-                                token: PhoneAuthProvider.ForceResendingToken
-                            ) {
-                                println("✅ OTP Sent to $phoneNumber")
-                                isOtpSent = true
-                                // ❌ FIX: don’t shadow variable
-                                storedVerificationId = verificationId
-                            }
-                        }
-
-                        val options = PhoneAuthOptions.newBuilder(auth)
-                            .setPhoneNumber("+91$phoneNumber")
-                            .setTimeout(60L, TimeUnit.SECONDS)
-                            .setActivity(activity)
-                            .setCallbacks(callbacks)
-                            .build()
+                        val options =
+                            PhoneAuthOptions.newBuilder(auth).setPhoneNumber("+91$phoneNumber")
+                                .setTimeout(60L, TimeUnit.SECONDS).setActivity(activity)
+                                .setCallbacks(callbacks).build()
 
                         PhoneAuthProvider.verifyPhoneNumber(options)
                     }
@@ -272,12 +207,25 @@ fun DoctorLoginScreen(
                     // ✅ Verify OTP
                     val enteredOtp = otpStates.joinToString("") { it.value }
                     if (storedVerificationId != null && enteredOtp.length == 6) {
-                        val credential = PhoneAuthProvider.getCredential(storedVerificationId!!, enteredOtp)
-                        auth.signInWithCredential(credential)
-                            .addOnCompleteListener { task ->
+                        val credential =
+                            PhoneAuthProvider.getCredential(storedVerificationId!!, enteredOtp)
+                        auth.signInWithCredential(credential).addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
                                     println("✅ Login Success")
-                                    saveDoctorInfo("+91$phoneNumber")
+
+                                    val doctor = Doctor(
+                                        name = "Doctor Name",
+                                        email = "Doctor Email",
+                                        phone = "+91$phoneNumber",
+                                        role = "Doctor",
+                                        password = "Doctor@123",
+                                        profileImage = "",
+                                        doctorId = FirebaseAuth.getInstance().currentUser?.uid,
+                                        createdAt = Timestamp.now(),
+
+                                        )
+                                    viewModel.saveDoctorInfo(doctor)
+
                                     navController.navigate(Screen.DoctorMain.route) {
                                         popUpTo(Screen.Auth.route) { inclusive = true }
                                     }
@@ -289,32 +237,8 @@ fun DoctorLoginScreen(
                         println("❌ Please enter OTP")
                     }
                 }
-            }
-        )
+            })
     }
-}
-
-
-private fun saveDoctorInfo(phoneNumber: String) {
-    val auth = FirebaseAuth.getInstance()
-    val firestore = FirebaseFirestore.getInstance()
-    val userId = auth.currentUser?.uid ?: return   // ✅ avoid crash if null
-
-    val doctorData = mapOf(
-        "uid" to userId,
-        "phoneNumber" to phoneNumber,
-        "createdAt" to Timestamp.now()
-    )
-
-    firestore.collection("doctors")
-        .document(userId)
-        .set(doctorData)
-        .addOnSuccessListener {
-            println("✅ Doctor data added")
-        }
-        .addOnFailureListener { e ->
-            println("❌ Failed to save doctor data: ${e.message}")
-        }
 }
 
 
@@ -324,7 +248,7 @@ fun PhoneNumberInputSection(
     onValueChange: (String) -> Unit,
     placeholder: String = LoginScreenStrings.PHONE_NUMBER_PLACEHOLDER,
 
-) {
+    ) {
     OutlinedTextField(
         value = value,
         onValueChange = {
@@ -334,8 +258,7 @@ fun PhoneNumberInputSection(
         },
         placeholder = {
             Text(
-                text = placeholder,
-                style = PlaceHolderTextStyle()
+                text = placeholder, style = PlaceHolderTextStyle()
             )
         },
         modifier = Modifier
@@ -362,14 +285,12 @@ fun PhoneNumberInputSection(
                 contentDescription = "Phone Icon",
                 tint = Color.Gray
             )
-        }
-    )
+        })
 }
 
 @Composable
 fun OtpInputSection(
-    value: String,
-    onValueChange: (String) -> Unit
+    value: String, onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
         value = value,
@@ -383,9 +304,7 @@ fun OtpInputSection(
             .size(48.dp)
             .background(Color.White, shape = RoundedCornerShape(10.dp)),
         textStyle = TextStyle(
-            fontSize = 16.sp,
-            fontFamily = Monsetserrat500(),
-            color = Color.Black
+            fontSize = 16.sp, fontFamily = Monsetserrat500(), color = Color.Black
         ),
         colors = TextFieldDefaults.outlinedTextFieldColors(
             backgroundColor = Color.White,
@@ -401,11 +320,10 @@ fun OtpInputSection(
         )
     )
 }
+
 @Composable
 fun SendOtpButton(
-    text: String,
-    modifier: Modifier = Modifier,
-    onClick: () -> Unit
+    text: String, modifier: Modifier = Modifier, onClick: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -420,14 +338,10 @@ fun SendOtpButton(
                     end = Offset.Zero
                 )
             )
-            .clickable(onClick = onClick),
-        contentAlignment = Alignment.Center
+            .clickable(onClick = onClick), contentAlignment = Alignment.Center
     ) {
         Text(
-            text = text,
-            fontSize = 16.sp,
-            fontFamily = Monsetserrat500(),
-            color = Color.White
+            text = text, fontSize = 16.sp, fontFamily = Monsetserrat500(), color = Color.White
         )
     }
 

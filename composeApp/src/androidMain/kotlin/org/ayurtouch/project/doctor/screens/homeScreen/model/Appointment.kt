@@ -1,4 +1,5 @@
-package org.ayurtouch.project.doctor.screens.homeScreen
+package org.ayurtouch.project.doctor.screens.homeScreen.model
+
 import kotlinx.serialization.Serializable
 
 @Serializable

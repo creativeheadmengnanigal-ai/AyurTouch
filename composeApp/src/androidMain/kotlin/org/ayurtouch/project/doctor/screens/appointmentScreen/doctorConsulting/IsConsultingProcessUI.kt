@@ -15,10 +15,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.TabRowDefaults.Divider
@@ -57,7 +55,7 @@ import org.ayurtouch.project.Monsetserrat500
 import org.ayurtouch.project.Monsetserrat600
 import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
 import org.ayurtouch.project.doctor.screens.appointmentScreen.SymptomsForm
-import org.ayurtouch.project.doctor.screens.homeScreen.InfinityCircles
+import org.ayurtouch.project.doctor.screens.homeScreen.view.InfinityCircles
 import org.ayurtouch.project.doctor.utils.CustomHeightShadowBox
 import org.ayurtouch.project.doctor.utils.CustomIcon
 import org.ayurtouch.project.doctor.utils.CustomImage
@@ -126,7 +124,7 @@ fun IsConsultingProcessUI(innerPadding: PaddingValues, navController: NavControl
 
                     },
 
-                    image = Res.drawable.doctor_dp,
+                    drawable = Res.drawable.doctor_dp,
                     size = 60.dp,
                 )
 

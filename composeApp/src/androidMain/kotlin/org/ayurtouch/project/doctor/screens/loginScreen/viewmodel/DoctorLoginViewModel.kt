@@ -1,83 +1,40 @@
 package org.ayurtouch.project.doctor.screens.loginScreen.viewmodel
 
-import android.app.Activity
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import org.ayurtouch.project.doctor.screens.loginScreen.model.DoctorAuthRepository
+import org.ayurtouch.project.doctor.screens.homeScreen.model.Doctor
+import org.ayurtouch.project.doctor.screens.loginScreen.model.DoctorLoginRepository
+import org.ayurtouch.project.doctor.screens.loginScreen.view.DoctorLoginScreen
 
 
-data class DoctorLoginUiState(
-    val phoneNumber: String = "",
-    val otp: String = "",
-    val isOtpSent: Boolean = false,
-    val verificationId: String? = null,
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val user: FirebaseUser? = null,
-    val message: String?=null
-)
+class DoctorLoginViewModel() : ViewModel() {
 
-class DoctorLoginViewModel(
-    private val repository: DoctorAuthRepository = DoctorAuthRepository()
-) : ViewModel() {
+    //repository
+    private val repository = DoctorLoginRepository()
 
-    private val _uiState = MutableStateFlow(DoctorLoginUiState())
-    val uiState: StateFlow<DoctorLoginUiState> = _uiState.asStateFlow()
+    private val _loginState = MutableStateFlow<DoctorLoginState>(DoctorLoginState.Nothing)
+    val loginState = _loginState.asStateFlow()
 
-    fun updatePhoneNumber(number: String) {
-        _uiState.update { it.copy(phoneNumber = number,) }
-    }
-
-    fun updateOtp(otp: String) {
-        _uiState.update { it.copy(otp = otp,) }
-    }
-
-    fun sendOtp(activity: Activity) {
-        var phoneNumber = _uiState.value.phoneNumber.trim()
-
-        if (phoneNumber.isBlank()) {
-            _uiState.update { it.copy(errorMessage = "Phone number required") }
-            return
-        }
-
-        // Ensure E.164 format (example: +91 for India)
-        if (!phoneNumber.startsWith("+")) {
-            phoneNumber = "+91$phoneNumber"  // 👈 add your country code here
-        }
-
+    fun saveDoctorInfo(doctor: Doctor) {
         viewModelScope.launch {
-            repository.sendOtp(phoneNumber, activity).collect { result ->
-                result.onSuccess { verificationId ->
-                    if (verificationId.startsWith("AUTO_VERIFIED")) {
-                        val otp = verificationId.split(":")[1]
-                        updateOtp(otp)
-                    } else {
-                        _uiState.update { it.copy(isOtpSent = true, verificationId = verificationId) }
-                    }
-                }.onFailure {
-                    _uiState.update { it.copy(errorMessage = it.message) }
-                }
-            }
+            _loginState.value = DoctorLoginState.Loading
+            val result = repository.saveDoctorInfo(doctor)
+            _loginState.value = if (result) DoctorLoginState.Success else DoctorLoginState.Error
         }
     }
 
 
-    fun verifyOtp() {
-        val state = _uiState.value
-        val otp = state.otp
-        val verificationId = state.verificationId ?: return
+}
 
-        viewModelScope.launch {
-            repository.verifyOtp(verificationId, otp).collect { result ->
-                result.onSuccess { user ->
-                    _uiState.update { it.copy(user = user,) }
-                }.onFailure {
-                    _uiState.update { it.copy(errorMessage = it.message,) }
-                }
-            }
-        }
-    }
+
+sealed class DoctorLoginState {
+    object Nothing : DoctorLoginState()
+    object Loading : DoctorLoginState()
+    object Error : DoctorLoginState()
+    object Success : DoctorLoginState()
+
 }

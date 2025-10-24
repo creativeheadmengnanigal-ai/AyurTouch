@@ -106,7 +106,7 @@ fun IsAppointmentHomeUI(innerPadding: PaddingValues, navController: NavControlle
                     },
 
                     size = 60.dp,
-                    image = Res.drawable.doctor_dp,
+                    drawable = Res.drawable.doctor_dp,
 
                 )
 

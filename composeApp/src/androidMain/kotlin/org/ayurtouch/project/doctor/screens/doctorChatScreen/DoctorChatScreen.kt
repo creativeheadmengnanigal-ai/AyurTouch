@@ -186,7 +186,7 @@ fun ChatListItem(chat: ChatItem, onClick: () -> Unit) {
     ) {
         CustomUserProfile(
             size = 48.dp,
-            image = chat.imageRes,
+            drawable = chat.imageRes,
             onClick = { }
         )
 

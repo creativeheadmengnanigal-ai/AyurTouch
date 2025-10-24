@@ -25,7 +25,7 @@ import org.ayurtouch.project.AppColors
 import org.ayurtouch.project.DoctorMainScreenString
 import org.ayurtouch.project.MenuLabelTextStyle
 import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
-import org.ayurtouch.project.doctor.screens.homeScreen.HomeScreen
+import org.ayurtouch.project.doctor.screens.homeScreen.view.HomeScreen
 import org.ayurtouch.project.doctor.screens.settingScreen.SettingsViewModel
 import org.ayurtouch.project.doctor.utils.CustomTopAppBar
 import org.jetbrains.compose.resources.DrawableResource

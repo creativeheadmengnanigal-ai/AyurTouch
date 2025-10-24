@@ -28,9 +28,9 @@ import org.ayurtouch.project.doctor.screens.appointmentScreen.cancelation.Doctor
 import org.ayurtouch.project.doctor.screens.appointmentScreen.reSchedule.DoctorAppointmentRescheduleScreen
 import org.ayurtouch.project.doctor.screens.doctorChatScreen.ChatDetailScreen
 import org.ayurtouch.project.doctor.screens.doctorChatScreen.DoctorChatScreen
-import org.ayurtouch.project.doctor.screens.homeScreen.HomeScreen
+import org.ayurtouch.project.doctor.screens.homeScreen.view.HomeScreen
 import org.ayurtouch.project.doctor.screens.loginScreen.view.DoctorLoginScreen
-import org.ayurtouch.project.doctor.screens.loginScreen.model.SmsBroadcastReceiver
+import org.ayurtouch.project.doctor.screens.loginScreen.model.classes.SmsBroadcastReceiver
 
 import org.ayurtouch.project.doctor.screens.mainScreen.DoctorMainScreen
 import org.ayurtouch.project.doctor.screens.notificationScreen.NotificationScreen
@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
 
-                val TEST_MODE = false
+                val TEST_MODE = true
 
                 NavHost(
                     navController = navController,

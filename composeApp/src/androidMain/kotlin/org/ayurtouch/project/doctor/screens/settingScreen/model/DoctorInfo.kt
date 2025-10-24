@@ -1,5 +1,4 @@
-package org.ayurtouch.project.doctor.screens.homeScreen.model
-
+package org.ayurtouch.project.doctor.screens.settingScreen.model
 
 data class DoctorInfo(
     val name: String = "",
@@ -10,5 +9,4 @@ data class DoctorInfo(
     val education: List<String> = emptyList(),
     val moreAboutPhysician: String = "",
     val moreClinicalInterest: List<String> = emptyList(),
-
 )

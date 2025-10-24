@@ -1,4 +1,4 @@
-package org.ayurtouch.project.doctor.screens.loginScreen.model
+package org.ayurtouch.project.doctor.screens.loginScreen.model.classes
 
 import android.content.BroadcastReceiver
 import android.content.Context

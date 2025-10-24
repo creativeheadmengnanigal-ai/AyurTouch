@@ -92,7 +92,7 @@ fun DoctorAppointmentCancellationScreen(
                         onClick = {
 
                         },
-                        image = Res.drawable.doctor_dp,
+                        drawable = Res.drawable.doctor_dp,
                         size = 60.dp,
                     )
 

@@ -1,4 +1,4 @@
-package org.ayurtouch.project.doctor.screens.homeScreen
+package org.ayurtouch.project.doctor.screens.homeScreen.view
 
 import android.util.Log
 import androidx.compose.foundation.*
@@ -19,13 +19,16 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import ayurtouch.composeapp.generated.resources.*
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.FirebaseAuth
 import org.ayurtouch.project.*
 import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
-import org.ayurtouch.project.doctor.screens.homeScreen.model.DoctorInfo
+import org.ayurtouch.project.doctor.screens.homeScreen.model.Appointment
+import org.ayurtouch.project.doctor.screens.homeScreen.viewmodel.DoctorHomeScreenStates
+import org.ayurtouch.project.doctor.screens.homeScreen.viewmodel.DoctorHomeScreenViewModel
 import org.ayurtouch.project.doctor.utils.CustomHeightShadowBox
 
 import org.ayurtouch.project.doctor.utils.CustomUserProfile
@@ -48,6 +51,8 @@ fun HomeScreenPreview() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(navController: NavController) {
+
+
     var isSecondBoxVisible by remember { mutableStateOf(true) }
     var isStatusActive by remember { mutableStateOf(false) }
     var selectedTab by remember { mutableStateOf("Symptoms") }
@@ -59,6 +64,31 @@ fun HomeScreen(navController: NavController) {
         Appointment("04:00 PM", "08 Sep", "Video Consulting", "Patient Name", "New Visit")
     )
 
+    val viewModel: DoctorHomeScreenViewModel = viewModel()
+    val state by viewModel.doctorHomeScreenStates.collectAsState()
+    val currentUid= FirebaseAuth.getInstance().currentUser?.uid.toString()
+
+    //
+    LaunchedEffect(Unit) {
+        viewModel.fetchDoctorInfo(currentUid)
+    }
+
+    when (state) {
+        is DoctorHomeScreenStates.Nothing -> Text("No data yet")
+        is DoctorHomeScreenStates.Loading -> CircularProgressIndicator()
+        is DoctorHomeScreenStates.Success -> {
+            val doctor = (state as DoctorHomeScreenStates.Success).doctor
+
+
+
+            }
+
+        else -> {}
+    }
+
+
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -66,7 +96,7 @@ fun HomeScreen(navController: NavController) {
             .verticalScroll(rememberScrollState())
             .padding(bottom = 10.dp)
     ) {
-        TopBar(navController)
+        TopBar(navController,state)
 
         StatusLocationSection(
             isStatusActive = isStatusActive,
@@ -85,7 +115,6 @@ fun HomeScreen(navController: NavController) {
         TitleWithArrowRow(
             title = DoctorHomeScreenString.APPOINTMENTS, isArrowVisible = true
         ) {
-//            navController.navigate(Screen.DoctorAppointment.route)
         }
 
         AppointmentList(appointments, navController)
@@ -129,7 +158,10 @@ fun SectionTitle(title: String) {
 }
 
 @Composable
-fun TopBar(navController: NavController) {
+fun TopBar(navController: NavController, state: DoctorHomeScreenStates) {
+
+
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -137,22 +169,29 @@ fun TopBar(navController: NavController) {
         verticalAlignment = Alignment.CenterVertically
     ) {
 
+        when(state){
 
-        CustomUserProfile(
-            onClick = {
-                navController.navigate(
-                    Screen.DoctorSetting.route +
-                            "?isSetting=true" +
-                            "&isMenuSetting=false"
 
+            is DoctorHomeScreenStates.Success -> {
+                val doctor = (state as DoctorHomeScreenStates.Success).doctor
+                CustomUserProfile(
+                    onClick = {
+                        navController.navigate(
+                            Screen.DoctorSetting.route +
+                                    "?isSetting=true" +
+                                    "&isMenuSetting=false"
+
+                        )
+                    },
+
+
+                    size = 60.dp,
+                    imageUrl = doctor.profileImage,
                 )
+            }
+            else -> {}
+        }
 
-
-            },
-
-             size = 60.dp,
-            image = Res.drawable.doctor_dp
-        )
 
 
 

@@ -3,11 +3,11 @@ package org.ayurtouch.project.doctor.screens.settingScreen.model
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
-import org.ayurtouch.project.doctor.screens.homeScreen.model.DoctorInfo
+import org.ayurtouch.project.doctor.screens.settingScreen.model.DoctorInfo
 
 
 
-class DoctorRepository {
+class DoctorSettingRepository {
 
     private val firestore = FirebaseFirestore.getInstance()
 

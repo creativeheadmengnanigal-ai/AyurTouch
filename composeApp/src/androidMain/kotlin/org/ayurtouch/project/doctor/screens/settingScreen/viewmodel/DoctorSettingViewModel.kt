@@ -5,13 +5,13 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import org.ayurtouch.project.doctor.screens.homeScreen.model.DoctorInfo
-import org.ayurtouch.project.doctor.screens.settingScreen.model.DoctorRepository
+import org.ayurtouch.project.doctor.screens.settingScreen.model.DoctorInfo
+import org.ayurtouch.project.doctor.screens.settingScreen.model.DoctorSettingRepository
 
 
 class DoctorSettingViewModel : ViewModel() {
 
-    private val repository = DoctorRepository()
+    private val repository = DoctorSettingRepository()
 
     private val _doctorInfo = MutableStateFlow<DoctorInfo?>(null)
     val doctorInfo: StateFlow<DoctorInfo?> = _doctorInfo
