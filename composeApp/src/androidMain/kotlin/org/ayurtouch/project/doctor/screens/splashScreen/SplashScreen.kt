@@ -12,13 +12,14 @@ import app.rive.runtime.kotlin.core.Loop
 
 import kotlinx.coroutines.delay
 import org.ayurtouch.project.R
+import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
 
 @Composable
 fun SplashScreen(navController: NavController) {
 
     LaunchedEffect(Unit) {
         delay(6000) // match your animation length
-        navController.navigate("auth") {
+        navController.navigate(Screen.DoctorMain.route) {
             popUpTo("splash") { inclusive = true }
         }
     }

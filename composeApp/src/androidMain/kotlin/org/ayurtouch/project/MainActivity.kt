@@ -18,13 +18,10 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.NavType
 import androidx.navigation.compose.*
 import androidx.navigation.navArgument
-<<<<<<< Updated upstream
 import com.google.android.gms.auth.api.phone.SmsRetriever
-import com.google.firebase.auth.FirebaseAuth
-=======
 import com.google.firebase.FirebaseApp
+import com.google.firebase.auth.FirebaseAuth
 
->>>>>>> Stashed changes
 import org.ayurtouch.project.doctor.navigationDoctorFlow.Screen
 import org.ayurtouch.project.doctor.screens.annoncementScreen.AnnouncementScreen
 import org.ayurtouch.project.doctor.screens.appointmentScreen.DoctorAppointmentScreen
@@ -72,15 +69,15 @@ open class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-<<<<<<< Updated upstream
+
         auth = FirebaseAuth.getInstance()
         viewModel = DoctorLoginViewModel()
 
 
 
-=======
+
         FirebaseApp.initializeApp(this)
->>>>>>> Stashed changes
+
 
 
         enableEdgeToEdge()
@@ -108,7 +105,7 @@ open class MainActivity : ComponentActivity() {
                 val TEST_MODE = false
                 NavHost(
                     navController = navController,
-                    startDestination = if (TEST_MODE) Screen.DoctorMain.route else Screen.Auth.route
+                    startDestination = if (TEST_MODE) Screen.DoctorMain.route else Screen.Splash.route
                 ) {
                     composable("splash") {
                         SplashScreen(navController)
